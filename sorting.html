@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Algorithm Visualizer</title>
+    <link rel="stylesheet" href="sorting.css">
+
+</head>
+<body>
+    <header>
+        <h1>Sorting Algorithm Visualizer</h1>
+    </header>
+    <div class="visualizer-container">
+        <div class="visualizer" id="bubble-sort-visualizer">
+            <h2>Bubble Sort</h2>
+            <div class="bars" id="bubble-bars"></div>
+            <button onclick="generateBars('bubble-bars')">Generate Array</button>
+            <button onclick="startBubbleSort()">Start Bubble Sort</button>
+        </div>
+        <div class="visualizer" id="merge-sort-visualizer">
+            <h2>Merge Sort</h2>
+            <div class="bars" id="merge-bars"></div>
+            <button onclick="generateBars('merge-bars')">Generate Array</button>
+            <button onclick="startMergeSort()">Start Merge Sort</button>
+        </div>
+    </div>
+    <script>
+        function generateBars(containerId) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            for (let i = 0; i < 20; i++) {
+                const height = Math.floor(Math.random() * 250) + 20;
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${height}px`;
+
+                const label = document.createElement('span');
+                label.innerText = height;
+                bar.appendChild(label);
+
+                container.appendChild(bar);
+            }
+        }
+
+        async function bubbleSort(containerId) {
+            const bars = document.getElementById(containerId).children;
+            const n = bars.length;
+            for (let i = 0; i < n - 1; i++) {
+                for (let j = 0; j < n - i - 1; j++) {
+                    bars[j].style.backgroundColor = 'red';
+                    bars[j + 1].style.backgroundColor = 'red';
+                    await new Promise(resolve => setTimeout(resolve, 100));
+
+                    const height1 = parseInt(bars[j].style.height);
+                    const height2 = parseInt(bars[j + 1].style.height);
+
+                    if (height1 > height2) {
+                        bars[j].style.height = `${height2}px`;
+                        bars[j + 1].style.height = `${height1}px`;
+
+                        bars[j].children[0].innerText = height2;
+                        bars[j + 1].children[0].innerText = height1;
+                    }
+
+                    bars[j].style.backgroundColor = '#4caf50';
+                    bars[j + 1].style.backgroundColor = '#4caf50';
+                }
+            }
+        }
+
+        async function mergeSort(bars, left, right) {
+            if (left >= right) return;
+            const mid = Math.floor((left + right) / 2);
+            await mergeSort(bars, left, mid);
+            await mergeSort(bars, mid + 1, right);
+            await merge(bars, left, mid, right);
+        }
+
+        async function merge(bars, left, mid, right) {
+            const temp = [];
+            let i = left, j = mid + 1;
+
+            while (i <= mid && j <= right) {
+                bars[i].style.backgroundColor = 'red';
+                bars[j].style.backgroundColor = 'red';
+                await new Promise(resolve => setTimeout(resolve, 100));
+
+                const height1 = parseInt(bars[i].style.height);
+                const height2 = parseInt(bars[j].style.height);
+
+                if (height1 <= height2) {
+                    temp.push(height1);
+                    i++;
+                } else {
+                    temp.push(height2);
+                    j++;
+                }
+            }
+
+            while (i <= mid) {
+                temp.push(parseInt(bars[i].style.height));
+                i++;
+            }
+            while (j <= right) {
+                temp.push(parseInt(bars[j].style.height));
+                j++;
+            }
+
+            for (let k = left; k <= right; k++) {
+                bars[k].style.height = `${temp[k - left]}px`;
+                bars[k].children[0].innerText = temp[k - left];
+                bars[k].style.backgroundColor = '#4caf50';
+            }
+        }
+
+        function startBubbleSort() {
+            bubbleSort('bubble-bars');
+        }
+
+        function startMergeSort() {
+            const bars = Array.from(document.getElementById('merge-bars').children);
+            mergeSort(bars, 0, bars.length - 1);
+        }
+
+        window.onload = function() {
+            generateBars('bubble-bars');
+            generateBars('merge-bars');
+        };
+    </script>
+</body>
+</html>

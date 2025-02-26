@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Searching Algorithm Visualizer</title>
+    <link rel="stylesheet" href="searching.css">
+
+</head>
+<body>
+    <header>
+        <h1>Searching Algorithm Visualizer</h1>
+    </header>
+    <div class="visualizer-container">
+        <div class="visualizer" id="linear-search-visualizer">
+            <h2>Linear Search</h2>
+            <div class="bars" id="linear-bars"></div>
+            <input type="number" id="linear-target" placeholder="Enter target" />
+            <button onclick="generateBars('linear-bars')">Generate Array</button>
+            <button onclick="startLinearSearch()">Start Linear Search</button>
+        </div>
+        <div class="visualizer" id="binary-search-visualizer">
+            <h2>Binary Search</h2>
+            <div class="bars" id="binary-bars"></div>
+            <input type="number" id="binary-target" placeholder="Enter target" />
+            <button onclick="generateBars('binary-bars', true)">Generate Array</button>
+            <button onclick="startBinarySearch()">Start Binary Search</button>
+        </div>
+    </div>
+    <script>
+        function generateBars(containerId, sorted = false) {
+            const container = document.getElementById(containerId);
+            container.innerHTML = '';
+            const numbers = [];
+            for (let i = 0; i < 20; i++) {
+                const height = Math.floor(Math.random() * 250) + 20;
+                numbers.push(height);
+            }
+            if (sorted) numbers.sort((a, b) => a - b);
+
+            numbers.forEach(height => {
+                const bar = document.createElement('div');
+                bar.className = 'bar';
+                bar.style.height = `${height}px`;
+
+                const label = document.createElement('span');
+                label.innerText = height;
+                bar.appendChild(label);
+
+                container.appendChild(bar);
+            });
+        }
+
+        async function linearSearch(containerId, target) {
+            const bars = document.getElementById(containerId).children;
+            for (let i = 0; i < bars.length; i++) {
+                bars[i].style.backgroundColor = 'yellow';
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                const height = parseInt(bars[i].style.height);
+                if (height === target) {
+                    bars[i].style.backgroundColor = 'green';
+                    return;
+                }
+                bars[i].style.backgroundColor = '#4caf50';
+            }
+            alert("Target not found");
+        }
+
+        async function binarySearch(containerId, target) {
+            const bars = Array.from(document.getElementById(containerId).children);
+            let left = 0, right = bars.length - 1;
+            while (left <= right) {
+                const mid = Math.floor((left + right) / 2);
+                bars[mid].style.backgroundColor = 'yellow';
+                await new Promise(resolve => setTimeout(resolve, 200));
+
+                const height = parseInt(bars[mid].style.height);
+                if (height === target) {
+                    bars[mid].style.backgroundColor = 'green';
+                    return;
+                }
+                bars[mid].style.backgroundColor = '#4caf50';
+
+                if (height < target) {
+                    left = mid + 1;
+                } else {
+                    right = mid - 1;
+                }
+            }
+            alert("Target not found");
+        }
+
+        function startLinearSearch() {
+            const target = parseInt(document.getElementById('linear-target').value);
+            if (!isNaN(target)) {
+                linearSearch('linear-bars', target);
+            } else {
+                alert("Please enter a valid number");
+            }
+        }
+
+        function startBinarySearch() {
+            const target = parseInt(document.getElementById('binary-target').value);
+            if (!isNaN(target)) {
+                binarySearch('binary-bars', target);
+            } else {
+                alert("Please enter a valid number");
+            }
+        }
+
+        window.onload = function() {
+            generateBars('linear-bars');
+            generateBars('binary-bars', true);
+        };
+    </script>
+</body>
+</html>
